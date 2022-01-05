@@ -17,3 +17,8 @@ services:
     command: -enable-url-source -mount /mnt/data
     ports:
       - "9000:9000"
+
+  mailer:
+    image: maildev/maildev
+    ports:
+      - 1080:80
