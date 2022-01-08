@@ -1,0 +1,17 @@
+
+@API_URL = http://localhost
+
+### n8n
+GET {{API_URL}}:5678
+
+### imaginary
+GET {{API_URL}}:9000
+
+### Minio
+GET {{API_URL}}:9001
+
+### MailDev
+GET {{API_URL}}:1080
+
+### Picsum
+GET https://picsum.photos/1920/1080
