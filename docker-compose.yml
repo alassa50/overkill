@@ -1,18 +1,42 @@
-version: '3'
+version: '3.8'
 
+################################################################################
+# SERVICES
+################################################################################
 services:
 
+  # ------------------------------------------------------------
+  # Redis
+  # ------------------------------------------------------------
   redis:
-    image: redis:5-alpine
-    ports: [6379]
+    image: redis:${REDIS_SERVER}
+    hostname: redis
 
+    # Apply custom arguments to redis startup
+    command: redis-server ${REDIS_ARGS:- }
+    environment:
+      - REDIS_ARGS=${REDIS_ARGS:- }
+
+    ports:
+      # [local-machine:]local-port:docker-port
+      - "${LOCAL_LISTEN_ADDR}${HOST_PORT_REDIS}:6379"
+
+  # ------------------------------------------------------------
+  # n8n
+  # ------------------------------------------------------------
   n8n:
     image: n8nio/n8n
+    hostname: n8n
     ports:
       - 5678:5678
 
+
+  # ------------------------------------------------------------
+  # imaginary
+  # ------------------------------------------------------------
   imaginary:
     image: h2non/imaginary:latest
+    hostname: imaginary
     volumes:
       - ./images:/mnt/data
     environment:
@@ -21,23 +45,45 @@ services:
     ports:
       - "9000:9000"
 
+  # ------------------------------------------------------------
+  # rabbitmq
+  # ------------------------------------------------------------
   rabbitmq:
     image: rabbitmq:3.7-management
+    hostname: rabbitmq
     ports: [5672, 15672]
 
+  # ------------------------------------------------------------
+  # minio
+  # ------------------------------------------------------------
   minio:
-      image: minio/minio
-      environment:
-          MINIO_ROOT_USER: access1234
-          MINIO_ROOT_PASSWORD: secret1234
-      volumes:
-          - ./data/minio:/data
-      command: server /data --console-address ":9001"
-      ports:
-          - 9090:9000
-          - 9001:9001
+    image: minio/minio
+    hostname: minio
+    environment:
+        MINIO_ROOT_USER: access1234
+        MINIO_ROOT_PASSWORD: secret1234
+    volumes:
+        - ./data/minio:/data
+    command: server /data --console-address ":9001"
+    ports:
+        - 9090:9000
+        - 9001:9001
 
+  # ------------------------------------------------------------
+  # mailer
+  # ------------------------------------------------------------
   mailer:
     image: maildev/maildev
+    hostname: mailer
     ports:
-      - 1080:80
+      - 1080:80      
+
+
+################################################################################
+# NETWORK
+################################################################################
+
+
+################################################################################
+# VOLUMES
+################################################################################
